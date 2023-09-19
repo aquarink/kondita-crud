@@ -29,60 +29,103 @@
                         </li>
                     </ul>
                     <form class="d-flex" role="search" method="GET" accept="index.php">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
                 </div>
             </div>
         </nav>
 
+        <?php if(isset($_GET['id'])) { ?>
         <div class="col-md-8">
-            <form action="update.php" method="POST">
-                <div class="mb-3">
-                    <label for="nama" class="form-label">Nama</label>
-                    <input type="text" class="form-control" id="nama" name="nama" placeholder="Tulis nama anda">
-                </div>
+            <?php
+            include "db.php";
 
-                <div class="mb-3">
-                    <label for="alamat" class="form-label">Alamat</label>
-                    <textarea class="form-control" id="alamat" name="alamat" rows="3" placeholder="Tulis alamat anda"></textarea>
-                </div>
+            // Query untuk mengambil data dari tabel tamu
+            $query = "SELECT * FROM tamu WHERE id = ".$_GET['id']." LIMIT 1";
+            $result = $mysqli->query($query);
 
-                <div class="mb-3">
-                    <label for="tanggal" class="form-label">Tanggal Lahir</label>
-
-                    <div class="row">
-                        <div class="col">
-                            <select class="form-control" id="tanggal" name="tanggal">
-                                <option selected disabled>Pilih Tanggal</option>
-                            </select>
+            if ($result->num_rows > 0) {
+                $counter = 1;
+                while ($row = $result->fetch_assoc()) {
+                    ?>
+                    <form action="update.php" method="POST">
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama</label>
+                            <input type="text" class="form-control" id="nama" name="nama" placeholder="Tulis nama anda" value="<?php echo $row['nama']; ?>">
                         </div>
 
-                        <div class="col">
-                            <select class="form-control" id="bulan" name="bulan">
-                                <option selected disabled>Pilih Bulan</option>
-                            </select>
+                        <div class="mb-3">
+                            <label for="alamat" class="form-label">Alamat</label>
+                            <textarea class="form-control" id="alamat" name="alamat" rows="3" placeholder="Tulis alamat anda"><?php echo $row['alamat']; ?></textarea>
                         </div>
 
-                        <div class="col">
-                            <select class="form-control" id="tahun" name="tahun">
-                                <option selected disabled>Pilih Tahun</option>
-                            </select>
+                        <div class="mb-3">
+                            <label for="tanggal" class="form-label">Tanggal Lahir</label>
+
+                            <div class="row">
+                                <div class="col">
+                                    <select class="form-control" id="tanggal" name="tanggal">
+                                        <option selected disabled>Pilih Tanggal</option>
+                                        <?php
+                                        for ($i=1; $i <= 31; $i++) {
+                                            if($row['tanggal'] == $i) {
+                                                echo "<option selected value='".$i."'>".$i."</option>";
+                                            } else {
+                                                echo "<option value='".$i."'>".$i."</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <div class="col">
+                                    <select class="form-control" id="bulan" name="bulan">
+                                        <option selected disabled>Pilih Bulan</option>
+
+                                        <?php
+                                        foreach ($bulanList as $nomorBulan => $namaBulan) {
+                                            if($row['bulan'] == $nomorBulan) {
+                                                echo "<option selected value='".$nomorBulan."'>".$namaBulan."</option>";
+                                            } else {
+                                                echo "<option value='".$nomorBulan."'>".$namaBulan."</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <div class="col">
+                                    <select class="form-control" id="tahun" name="tahun">
+                                        <option selected disabled>Pilih Tahun</option>
+                                        <?php
+                                        for ($i=1980; $i <= date('Y'); $i++) { 
+                                            if($row['tahun'] == $i) {
+                                                echo "<option selected value='".$i."'>".$i."</option>";
+                                            } else {
+                                                echo "<option value='".$i."'>".$i."</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="mb-3">
-                    <input type="hidden" name="id" value="ID_NYA">
+                        <div class="mb-3">
+                            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
 
-                    <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-pencil-square"></i> Update Data
-                    </button>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-pencil-square"></i> Update Data
+                            </button>
 
-                    <a href="index.php" class="btn btn-secondary"><i class="bi bi-card-list"></i> List Data</a>
-                </div>
-            </form>
+                            <a href="index.php" class="btn btn-secondary"><i class="bi bi-card-list"></i> List Data</a>
+                        </div>
+                    </form>
+                <?php } ?>
+            <?php } ?>
         </div>
+        <?php } else { header("Location: index.php"); }?>
 
     <!-- CORE -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>

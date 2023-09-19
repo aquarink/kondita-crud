@@ -29,14 +29,23 @@
                         </li>
                     </ul>
                     <form class="d-flex" role="search" method="GET" accept="index.php">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
                 </div>
             </div>
         </nav>
 
-        <div class="col-md-8">
+        <div class="col-md-8" style="margin-top: 20px">
+            <?php
+            if(isset($_GET['error'])) {
+                echo "<p style='color: red'>".$_GET['error']."</p>";
+            }
+
+            if(isset($_GET['success'])) {
+                echo "<p style='color: blue'>".$_GET['success']."</p>";
+            }
+            ?>
             <form action="save.php" method="POST">
                 <div class="mb-3">
                     <label for="nama" class="form-label">Nama</label>
@@ -55,18 +64,35 @@
                         <div class="col">
                             <select class="form-control" id="tanggal" name="tanggal">
                                 <option selected disabled>Pilih Tanggal</option>
+                                <?php
+                                for ($i=1; $i <= 31; $i++) { 
+                                    echo "<option value='".$i."'>".$i."</option>";
+                                }
+                                ?>
                             </select>
                         </div>
 
                         <div class="col">
                             <select class="form-control" id="bulan" name="bulan">
                                 <option selected disabled>Pilih Bulan</option>
+
+                                <?php
+                                include "db.php";
+                                foreach ($bulanList as $nomorBulan => $namaBulan) {
+                                    echo "<option value='".$nomorBulan."'>".$namaBulan."</option>";
+                                }
+                                ?>
                             </select>
                         </div>
 
                         <div class="col">
                             <select class="form-control" id="tahun" name="tahun">
                                 <option selected disabled>Pilih Tahun</option>
+                                <?php
+                                for ($i=1980; $i <= date('Y'); $i++) { 
+                                    echo "<option value='".$i."'>".$i."</option>";
+                                }
+                                ?>
                             </select>
                         </div>
                     </div>

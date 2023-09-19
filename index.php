@@ -29,7 +29,7 @@
                         </li>
                     </ul>
                     <form class="d-flex" role="search" method="GET" accept="index.php">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
                 </div>
@@ -47,16 +47,37 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>
-                        <a href="edit.php" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
-                        <a href="delete.php" class="btn btn-danger"><i class="bi bi-trash"></i> Remove</a>
-                    </td>
-                </tr>
+                <?php
+                include "db.php";
+
+                // Query untuk mengambil data dari tabel tamu
+                $query = "SELECT * FROM tamu";
+
+                if(isset($_GET['q'])) {
+                    if($_GET['q'] != '') {
+                        $query = "SELECT * FROM tamu WHERE nama LIKE '%".$_GET['q']."%' OR alamat LIKE '%".$_GET['q']."%'";
+                    }
+                }
+                
+                $result = $mysqli->query($query);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+
+                        $tgl_lahir = $row['tanggal']." ".$bulanList[$row['bulan']]." ".$row['tahun'];
+                        ?>
+                        <tr>
+                            <th scope="row"><?php echo $row['id']; ?></th>
+                            <td><?php echo $row['nama']; ?></td>
+                            <td><?php echo $row['alamat']; ?></td>
+                            <td><?php echo $tgl_lahir; ?></td>
+                            <td>
+                                <a href="edit.php?id=<?php echo $row['id']; ?>" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+                                <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-danger"><i class="bi bi-trash"></i> Remove</a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                <?php } ?>
             </tbody>
         </table>
     </div>
